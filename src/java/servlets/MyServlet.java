@@ -5,6 +5,7 @@
  */
 package servlets;
 
+import entity.Book;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -47,6 +48,9 @@ public class MyServlet extends HttpServlet {
                 String name = request.getParameter("name"); //достаем данные из html формы addBookForm
                 String author = request.getParameter("author");
                 String publishedYear = request.getParameter("publishedYear");
+                Book book = new Book(name, author, Integer.parseInt(publishedYear));
+                
+                
                 //сообщаем индекс странице, что данные получены
                 request.setAttribute("info", "Данные из формы получены: название книги: "+ name + 
                         " автор: "+ author + 
