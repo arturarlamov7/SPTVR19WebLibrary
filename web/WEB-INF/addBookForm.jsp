@@ -14,9 +14,9 @@
     <body>
         <h1>Добавить книгу</h1>
         <form action="createBook" method="POST">
-            Название книги: <input type="text" name="name" value=""><br>
-            Автор книги: <input type="text" name="author" value=""><br>
-            Год издания книги: <input type="text" name="publishedYear" value=""><br>
+            Название книги: <input type="text" name="name" value="${name}"><br> 
+            Автор книги: <input type="text" name="author" value="${author}"><br>
+            Год издания книги: <input type="text" name="publishedYear" value="${publishedYear}"><br>
             <input type="submit" name="submit" value="Отправить"><br>
         </form>
     </body>

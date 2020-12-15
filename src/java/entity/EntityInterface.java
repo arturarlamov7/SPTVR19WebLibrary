@@ -9,7 +9,7 @@ package entity;
  *
  * @author artur
  */
-interface EntityInterface {
-    public void setId(long id);
-    public long getId();
+public interface EntityInterface {
+    public void setId(Long id);
+    public Long getId();
 }

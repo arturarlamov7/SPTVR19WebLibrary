@@ -5,13 +5,20 @@
  */
 package entity;
 
+import java.io.Serializable;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
 /**
  *
- * @author sillamae kutsekool
+ * @author artur
  */
-
-public class Book {
-
+@Entity
+public class Book implements Serializable, EntityInterface{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String name;
     private String author;
@@ -20,13 +27,14 @@ public class Book {
     public Book() {
     }
 
-    public Book( String name, String author, Integer publishedYear, int parseInt) {
+    public Book(String name, String author, Integer publishedYear) {
         this.name = name;
         this.author = author;
-        this.publishedYear = publishedYear;        
+        this.publishedYear = publishedYear;
     }
-
-
+    
+    
+    
     public String getName() {
         return name;
     }
@@ -34,7 +42,7 @@ public class Book {
     public void setName(String name) {
         this.name = name;
     }
-    
+
     public String getAuthor() {
         return author;
     }
@@ -58,9 +66,7 @@ public class Book {
                 + ", author=" + author 
                 + ", publishedYear=" + publishedYear 
                 + '}';
-        
     }
-
 
     public Long getId() {
         return id;
@@ -68,5 +74,7 @@ public class Book {
 
     public void setId(Long id) {
         this.id = id;
-    }      
+    }
+    
+    
 }
