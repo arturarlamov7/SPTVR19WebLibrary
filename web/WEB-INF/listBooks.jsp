@@ -13,9 +13,12 @@
         <title>Список книг</title>
     </head>
     <body>
-        <h1>Список книг библиотеки:</h1>    
-        <c:forEach var="book" varStatus="status" items="${listBooks}">
-                <li>${status.index + 1}. "${book.name}". ${book.author}. ${book.publishedYear}</li>
-            </c:forEach>      
+        <h1>Список книг библиотеки:</h1>  
+        <select name="bookId" multiple="true">
+            <option value="#">Выберите книгу: </option>
+            <c:forEach var="book" varStatus="status" items="${listBooks}">
+            <option value="${book.id}"> ${status.index + 1}. "${book.name}". ${book.author}. ${book.publishedYear}</option>
+            </c:forEach> 
+        </select>
     </body>
 </html>

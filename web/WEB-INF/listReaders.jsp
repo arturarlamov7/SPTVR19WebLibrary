@@ -14,8 +14,11 @@
     </head>
     <body>
         <h1>Список читателей библиотеки:</h1>
-        <c:forEach var="reader" varStatus="status" items="${listReaders}">
-                <li>${status.index + 1}. "${reader.name}". ${reader.lastname}. ${reader.phone}</li>
-            </c:forEach>
+        <select name="readerId" multiple="true">
+            <option value="#">Выберите читателя: </option>
+            <c:forEach var="reader" varStatus="status" items="${listReaders}">
+            <option value="${reader.id}"> ${status.index + 1}. "${reader.name}". ${reader.lastname}. ${reader.phone}</option>
+            </c:forEach> 
+        </select>
     </body>
 </html>

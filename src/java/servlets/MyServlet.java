@@ -6,8 +6,10 @@
 package servlets;
 
 import entity.Book;
+import entity.History;
 import entity.Reader;
 import java.io.IOException;
+import java.util.GregorianCalendar;
 import java.util.List;
 import javax.ejb.EJB;
 import javax.servlet.ServletException;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import session.BookFacade;
+import session.HistoryFacade;
 import session.ReaderFacade;
 
 /**
@@ -28,15 +31,19 @@ import session.ReaderFacade;
     "/listBooks",
     "/addReader",
     "/createReader",
-    "/listReaders"
+    "/listReaders",
+    "/takeOnBookForm",
+    "/takeOnBook"
     
         
 })
 public class MyServlet extends HttpServlet {
-    @EJB 
+    @EJB //enterprise JavaBeans
     private BookFacade bookFacade; //поле bookFacade
     @EJB
     private ReaderFacade readerFacade;
+    @EJB    
+    private HistoryFacade historyFacade;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -50,7 +57,7 @@ public class MyServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("UTF-8"); //заставляем читать русские буквы
+        request.setCharacterEncoding("UTF-8"); 
         String path = request.getServletPath(); //вернет запрос, который идет после названме контекста
         
         switch (path) {
@@ -69,7 +76,7 @@ public class MyServlet extends HttpServlet {
                         || "".equals(publishedYear) || publishedYear == null){
                 
                     request.setAttribute("info","Пожалуйста заполните все поля формы");
-                    request.setAttribute("name",name);
+                    request.setAttribute("name",name); //возвращаем поля, которые были заполнены
                     request.setAttribute("author",author);
                     request.setAttribute("publishedYear",publishedYear);
                     
@@ -106,10 +113,11 @@ public class MyServlet extends HttpServlet {
                 }
                 
                 Reader reader= new Reader(name, lastname, phone);
-                readerFacade.create(reader);
+                readerFacade.create(reader); //сохраняем читателя в базу данных
                 request.setAttribute("info","Добавлена читатель: " +reader.toString() );
                 request.getRequestDispatcher("/index.jsp").forward(request, response);          
                 break;
+                
             case "/listReaders":
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
@@ -120,6 +128,25 @@ public class MyServlet extends HttpServlet {
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher("/WEB-INF/listBooks.jsp").forward(request, response);
+                break;
+                
+            case "/takeOnBookForm":
+                listReaders = readerFacade.findAll();
+                request.setAttribute("listReaders", listReaders);
+                listBooks = bookFacade.findAll();
+                request.setAttribute("listBooks", listBooks);
+                request.getRequestDispatcher("/WEB-INF/takeOnBookForm.jsp").forward(request, response);
+                break;
+                
+            case "/takeOnBook":
+                String bookId = request.getParameter("bookId");
+                book = bookFacade.find(Long.parseLong(bookId));
+                String readerId = request.getParameter("readerId");
+                reader = readerFacade.find(Long.parseLong(readerId));
+                History history = new History(book, reader, new GregorianCalendar().getTime(), null);
+                historyFacade.create(history);
+                request.setAttribute("info","Добавлена выдана");
+                request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
         }
 
