@@ -8,6 +8,7 @@ package servlets;
 import entity.Book;
 import entity.History;
 import entity.Reader;
+import entity.User;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -17,21 +18,23 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
+import session.UserFacade;
 
 /**
  *
  * @author artur
  */
-@WebServlet(name = "MyServlet", urlPatterns = {
+@WebServlet(name = "UserServlet", urlPatterns = {
     "/addBook",
     "/createBook",
-    "/listBooks",
     "/addReader",
     "/createReader",
     "/listReaders",
+    "/listBooks",
     "/takeOnBookForm",
     "/takeOnBook",
     "/returnBookForm",
@@ -39,13 +42,15 @@ import session.ReaderFacade;
     
         
 })
-public class MyServlet extends HttpServlet {
+public class UserServlet extends HttpServlet {
     @EJB //enterprise JavaBeans
     private BookFacade bookFacade; //поле bookFacade
     @EJB
     private ReaderFacade readerFacade;
     @EJB    
     private HistoryFacade historyFacade;
+    @EJB
+    private UserFacade userFacade;
 
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
@@ -60,6 +65,22 @@ public class MyServlet extends HttpServlet {
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
         request.setCharacterEncoding("UTF-8"); 
+        
+        HttpSession session = request.getSession(false);
+        if (session == null ) {
+            request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
+            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);
+            return;
+        }       
+        User user = (User) session.getAttribute("user");
+        
+        if (user == null) {
+            request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
+            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
+            
+        }
+        
+        
         String path = request.getServletPath(); //вернет запрос, который идет после названме контекста
         
         switch (path) {
@@ -101,31 +122,38 @@ public class MyServlet extends HttpServlet {
                 name = request.getParameter("name");
                 String lastname = request.getParameter("lastname");
                 String phone = request.getParameter("phone");
+                String login = request.getParameter("login");
+                String password = request.getParameter("password");
                 
                 if ("".equals(name) || name ==  null 
                         || "".equals(lastname) || lastname == null
-                        || "".equals(phone) || phone == null){ 
+                        || "".equals(phone) || phone == null
+                        || "".equals(login) || login == null
+                        || "".equals(password) || password == null                        
+                        ){ 
                     
                     request.setAttribute("info", "Пожалуйста заполните все поля формы!");
                     request.setAttribute("name",name);
-                    request.setAttribute("author",lastname);
-                    request.setAttribute("publishedYear",phone);
+                    request.setAttribute("lastname",lastname);
+                    request.setAttribute("phone",phone);
                     
                     request.getRequestDispatcher("/WEB-INF/addReaderForm.jsp").forward(request, response);
                 }
                 
                 Reader reader= new Reader(name, lastname, phone);
                 readerFacade.create(reader); //сохраняем читателя в базу данных
+                User user = new User(login, password, reader);
+                userFacade.create(user);
                 request.setAttribute("info","Добавлена читатель: " +reader.toString() );
                 request.getRequestDispatcher("/index.jsp").forward(request, response);          
-                break;
-                
+                break;                
+                             
             case "/listReaders":
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
                 request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
                 break;
-          
+                    
             case "/listBooks":
                 List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);

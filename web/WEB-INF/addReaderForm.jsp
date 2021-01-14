@@ -17,6 +17,8 @@
             Имя читателя: <input type="text" name="name" value="${name}"><br> 
             Фамилия: <input type="text" name="lastname" value="${lastname}"><br>
             Номер телефона: <input type="text" name="phone" value="${phone}"><br>
+            Логин: <input type="text" name="login" value="${login}"><br>
+            Пароль: <input type="text" name="password" value=""><br>
             <input type="submit" name="submit" value="Отправить"><br>           
         </form>
     </body>
