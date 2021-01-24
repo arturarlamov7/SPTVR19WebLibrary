@@ -31,10 +31,9 @@ import session.UserFacade;
 @WebServlet(name = "UserServlet", urlPatterns = {
     "/addBook",
     "/createBook",
-    "/addReader",
-    "/createReader",
+    "/editBookForm",
+    "/editBook",
     "/listReaders",
-    "/listBooks",
     "/takeOnBookForm",
     "/takeOnBook",
     "/returnBookForm",
@@ -71,13 +70,14 @@ public class UserServlet extends HttpServlet {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
             request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);
             return;
-        }       
+        }
+        
         User user = (User) session.getAttribute("user");
         
         if (user == null) {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
             request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
-            
+            return;
         }
         
         
@@ -114,65 +114,56 @@ public class UserServlet extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
                 
-            case "/addReader":
-                request.getRequestDispatcher("/WEB-INF/addReaderForm.jsp").forward(request, response);
+                
+            case "/editBookForm":
+                String bookId = request.getParameter("bookId");
+                book = bookFacade.find(Long.parseLong(bookId));
+                request.setAttribute("book", book);
+                request.getRequestDispatcher("/WEB-INF/editBookForm.jsp").forward(request, response);
                 break;
                 
-            case "/createReader":
+            case "/editBook": 
+                bookId = request.getParameter("bookId");
+                book = bookFacade.find(Long.parseLong(bookId));
                 name = request.getParameter("name");
-                String lastname = request.getParameter("lastname");
-                String phone = request.getParameter("phone");
-                String login = request.getParameter("login");
-                String password = request.getParameter("password");
-                
-                if ("".equals(name) || name ==  null 
-                        || "".equals(lastname) || lastname == null
-                        || "".equals(phone) || phone == null
-                        || "".equals(login) || login == null
-                        || "".equals(password) || password == null                        
-                        ){ 
-                    
-                    request.setAttribute("info", "Пожалуйста заполните все поля формы!");
-                    request.setAttribute("name",name);
-                    request.setAttribute("lastname",lastname);
-                    request.setAttribute("phone",phone);
-                    
-                    request.getRequestDispatcher("/WEB-INF/addReaderForm.jsp").forward(request, response);
+                author = request.getParameter("author");
+                publishedYear = request.getParameter("publishedYear");
+                if("".equals(name) || name == null 
+                        || "".equals(author) || author == null
+                        || "".equals(publishedYear) || publishedYear == null){
+                    request.setAttribute("info","Поля не должны быть пустыми");
+                    request.setAttribute("bookId", book.getId());
+                    request.getRequestDispatcher("/editBookForm").forward(request, response);
+                    break; 
                 }
-                
-                Reader reader= new Reader(name, lastname, phone);
-                readerFacade.create(reader); //сохраняем читателя в базу данных
-                User user = new User(login, password, reader);
-                userFacade.create(user);
-                request.setAttribute("info","Добавлена читатель: " +reader.toString() );
-                request.getRequestDispatcher("/index.jsp").forward(request, response);          
-                break;                
+                book.setName(name);
+                book.setAuthor(author);
+                book.setPublishedYear(Integer.parseInt(publishedYear));
+                bookFacade.edit(book);
+                request.setAttribute("info","Книга отредактирована");
+                request.setAttribute("bookId", book.getId());
+                request.getRequestDispatcher("/editBookForm").forward(request, response);         
+                break;                                   
                              
             case "/listReaders":
                 List<Reader> listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
                 request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
-                break;
-                    
-            case "/listBooks":
-                List<Book> listBooks = bookFacade.findAll();
-                request.setAttribute("listBooks", listBooks);
-                request.getRequestDispatcher("/WEB-INF/listBooks.jsp").forward(request, response);
-                break;
+                break;                   
                 
             case "/takeOnBookForm":
                 listReaders = readerFacade.findAll();
                 request.setAttribute("listReaders", listReaders);
-                listBooks = bookFacade.findAll();
+                List<Book> listBooks = bookFacade.findAll();
                 request.setAttribute("listBooks", listBooks);
                 request.getRequestDispatcher("/WEB-INF/takeOnBookForm.jsp").forward(request, response);
                 break;
                 
             case "/takeOnBook":
-                String bookId = request.getParameter("bookId");
+                bookId = request.getParameter("bookId");
                 book = bookFacade.find(Long.parseLong(bookId));
                 String readerId = request.getParameter("readerId");
-                reader = readerFacade.find(Long.parseLong(readerId));
+                Reader reader = readerFacade.find(Long.parseLong(readerId));
                 History history = new History(book, reader, new GregorianCalendar().getTime(), null);
                 historyFacade.create(history);
                 request.setAttribute("info","Добавлена выдана");
