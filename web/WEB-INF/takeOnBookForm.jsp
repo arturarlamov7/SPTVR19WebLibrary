@@ -10,7 +10,7 @@
 <html>
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-        <title>Выдача книги</title>
+        <title>Выдать книгу</title>
     </head>
     <body>
         <h1>Выдать книгу</h1>
@@ -22,14 +22,9 @@
                 </c:forEach> 
             </select>
             <br>
-            <select name="readerId">
-                <option value="#">Выберите читателя: </option>
-                <c:forEach var="reader" varStatus="status" items="${listReaders}">
-                    <option value="${reader.id}"> ${status.index + 1}. "${reader.name}". ${reader.lastname}. ${reader.phone}</option>
-                </c:forEach> 
-            </select>
+
             <br>
-            <input type="submit" value="выдать книгу">
+            <input type="submit" value="Взять книгу">
         </form>
     </body>
 </html>

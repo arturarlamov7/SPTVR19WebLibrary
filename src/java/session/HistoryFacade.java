@@ -6,6 +6,7 @@
 package session;
 
 import entity.History;
+import entity.Reader;
 import java.util.List;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -30,9 +31,10 @@ public class HistoryFacade extends AbstractFacade<History> {
         super(History.class);
     }
     
-        public List<History> findHistoriesWithReadBook() {
+        public List<History> findHistoriesWithReadBook(Reader reader) { //получаем книги, которые читает этот Reader
         try {
-            return em.createQuery("SELECT h FROM History h WHERE h.returnDate = NULL")
+            return em.createQuery("SELECT h FROM History h WHERE h.returnDate = NULL AND h.reader = :reader")
+                    .setParameter("reader", reader)
                     .getResultList();
         } catch (Exception e) {
             return null;

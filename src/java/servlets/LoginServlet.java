@@ -90,7 +90,7 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
                 
-                        case "/addReader":
+            case "/addReader":
                 request.getRequestDispatcher("/WEB-INF/addReaderForm.jsp").forward(request, response);
                 break;
                 
