@@ -29,6 +29,7 @@ import session.UserFacade;
  * @author artur
  */
 @WebServlet(name = "UserServlet", urlPatterns = {
+    
     "/takeOnBookForm",
     "/takeOnBook",
     "/returnBookForm",
@@ -58,29 +59,20 @@ public class UserServlet extends HttpServlet {
     protected void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         response.setContentType("text/html;charset=UTF-8");
-        request.setCharacterEncoding("UTF-8"); 
-        
+        request.setCharacterEncoding("UTF-8");        
         HttpSession session = request.getSession(false);
         if (session == null ) {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
-            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);
+            request.getRequestDispatcher("/showLoginForm").forward(request, response);
             return;
-        }
-        
-        User user = (User) session.getAttribute("user");
-        
+        }        
+        User user = (User) session.getAttribute("user");       
         if (user == null) {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
-            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
+            request.getRequestDispatcher("/showLoginForm").forward(request, response);            
             return;
         }
-        
-        if (!"manager".equals(user.getLogin())) {
-            request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
-            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
-            return;            
-        }
-        
+
         String path = request.getServletPath(); //вернет запрос, который идет после названме контекста
         
         switch (path) {                              

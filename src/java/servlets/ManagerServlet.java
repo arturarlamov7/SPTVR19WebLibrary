@@ -58,6 +58,7 @@ public class ManagerServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         
         HttpSession session = request.getSession(false);
+        
         if (session == null ) {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
             request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);
@@ -70,10 +71,14 @@ public class ManagerServlet extends HttpServlet {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
             request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
             return;
-        }
-        
-        
+        }       
         String path = request.getServletPath(); //вернет запрос, который идет после названме контекста
+        
+        if (!"manager".equals(user.getLogin())) {
+            request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
+            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
+            return;            
+        }
         
         switch (path) {
             case "/addBook":

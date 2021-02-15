@@ -22,8 +22,6 @@
                 </c:forEach> 
             </select>
             <br>
-
-            <br>
             <input type="submit" value="Взять книгу">
         </form>
     </body>

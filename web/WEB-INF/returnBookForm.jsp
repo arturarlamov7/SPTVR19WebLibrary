@@ -17,7 +17,7 @@
         <p>${info}</p>
         <form action="returnBook" method="POST">
             <select name="historyId" multiple="true">
-                <option value="">Выберите возвращаемую книгу</option>
+                <option value="">Выберите возвращаемую книгу:</option>
                 <c:forEach var="history" items="${listHistoriesWithReadBook}">
                     <option value="${history.id}">"${history.book.name}" читает ${history.reader.name} ${history.reader.lastname} </option>
                 </c:forEach>
