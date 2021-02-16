@@ -14,9 +14,9 @@
     </head>
     <body>
         <h1>Выдать книгу</h1>
-        <form action="takeOnBook" method="POST"
-            <select name="bookId">
-                <option value="#">Выберите книгу: </option>
+        <form action="takeOnBook" method="POST">
+            <select name="bookId" >
+                <option value="">Выберите книгу: </option>
                 <c:forEach var="book" varStatus="status" items="${listBooks}">
                     <option value="${book.id}"> ${status.index + 1}. "${book.name}". ${book.author}. ${book.publishedYear}</option>
                 </c:forEach> 
