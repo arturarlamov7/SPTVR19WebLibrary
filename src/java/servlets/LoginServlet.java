@@ -7,7 +7,9 @@ package servlets;
 
 import entity.Book;
 import entity.Reader;
+import entity.Role;
 import entity.User;
+import entity.UserRoles;
 import java.io.IOException;
 import java.util.List;
 import javax.ejb.EJB;
@@ -19,18 +21,20 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import session.BookFacade;
 import session.ReaderFacade;
+import session.RoleFacade;
 import session.UserFacade;
+import session.UserRolesFacade;
 
 /**
  *
  * @author artur
  */
-@WebServlet(name = "LoginServlet", urlPatterns = {
+@WebServlet(name = "LoginServlet", loadOnStartup = 1, urlPatterns = {
     "/showLoginForm",
     "/logout",
     "/login",
-    "/addReader",
-    "/createReader",
+    "/registrationForm",
+    "/registration",
     "/listBooks",
 })
 public class LoginServlet extends HttpServlet {
@@ -40,7 +44,41 @@ public class LoginServlet extends HttpServlet {
     private ReaderFacade readerFacade;
     @EJB
     private BookFacade bookFacade;
+    @EJB
+    private RoleFacade roleFacade;
+    @EJB
+    private UserRolesFacade userRolesFacade;
 
+    @Override
+    public void init() throws ServletException {
+        super.init(); 
+        if(userFacade.findAll().size() > 0) return; //находим пользоаптелей если их хотя бы больше 0
+        //return - выход из метода
+        //Создаем супер администратора
+        Reader reader = new Reader("Artur", "Arlamov", "58502276" );
+        readerFacade.create(reader);
+        User user = new User("admin", "12345", reader);
+        userFacade.create(user);
+        //Создаем и назначаем роли пользователю
+        //РОЛЬ админ
+        Role role = new Role("ADMIN");
+        roleFacade.create(role);
+        UserRoles userRoles = new UserRoles(user, role);
+        userRolesFacade.create(userRoles);
+        
+        //роль менеджер
+        role = new Role("MANAGER");
+        roleFacade.create(role);
+        userRoles = new UserRoles(user, role);
+        userRolesFacade.create(userRoles);
+        
+        //роль читатель
+        role = new Role("READER");
+        roleFacade.create(role);
+        userRoles = new UserRoles(user, role);
+        userRolesFacade.create(userRoles);
+    }
+    
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -90,11 +128,11 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
                 
-            case "/addReader":
-                request.getRequestDispatcher("/WEB-INF/addReaderForm.jsp").forward(request, response);
+            case "/registrationForm":
+                request.getRequestDispatcher("/WEB-INF/registrationForm.jsp").forward(request, response);
                 break;
                 
-            case "/createReader":
+            case "/registration":
                 String name = request.getParameter("name");
                 String lastname = request.getParameter("lastname");
                 String phone = request.getParameter("phone");
@@ -115,13 +153,16 @@ public class LoginServlet extends HttpServlet {
                     request.setAttribute("login", login);
                     request.setAttribute("password", password);
                     
-                    request.getRequestDispatcher("/addReaderForm").forward(request, response);
+                    request.getRequestDispatcher("/registrationForm").forward(request, response);
                 }
                 
                 Reader reader= new Reader(name, lastname, phone);
                 readerFacade.create(reader); //сохраняем читателя в базу данных
                 user = new User(login, password, reader);
                 userFacade.create(user);
+                Role roleReader = roleFacade.findByName("READER");
+                UserRoles userRoles = new UserRoles(user, roleReader); //связь пользователя с ролью
+                userRolesFacade.create(userRoles);
                 request.setAttribute("info","Добавлена читатель: " +reader.toString() );
                 request.getRequestDispatcher("/index.jsp").forward(request, response);          
                 break;

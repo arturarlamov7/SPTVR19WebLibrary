@@ -13,7 +13,7 @@
     </head>
     <body>
         <h1>Добавить читателя</h1>
-        <form action="createReader" method="POST">
+        <form action="registration" method="POST">
             Имя читателя: <input type="text" name="name" value="${name}"><br> 
             Фамилия: <input type="text" name="lastname" value="${lastname}"><br>
             Номер телефона: <input type="text" name="phone" value="${phone}"><br>

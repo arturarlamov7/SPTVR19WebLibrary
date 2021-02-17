@@ -19,7 +19,7 @@
         <a href="showLoginForm">Войти</a></br>
         <a href="logout">Выйти</a></br>
         <a href="addBook">Добавить новую книгу</a></br>
-        <a href="addReader">Регистрация нового пользователя</a></br>
+        <a href="registrationForm">Регистрация нового пользователя</a></br>
         <a href="listBooks">Список книг</a></br>
         <a href="listReaders">Список читателей</a></br>
         <a href="takeOnBookForm">Выдать книгу читателю</a></br>

@@ -22,6 +22,7 @@ import session.BookFacade;
 import session.HistoryFacade;
 import session.ReaderFacade;
 import session.UserFacade;
+import session.UserRolesFacade;
 
 /**
  *
@@ -32,7 +33,6 @@ import session.UserFacade;
     "/createBook",
     "/editBookForm",
     "/editBook",
-    "/listReaders",
 })
 public class ManagerServlet extends HttpServlet {
     @EJB
@@ -43,6 +43,8 @@ public class ManagerServlet extends HttpServlet {
     private BookFacade bookFacade;
     @EJB    
     private HistoryFacade historyFacade;
+    @EJB
+    private UserRolesFacade userRolesFacade;
     /**
      * Processes requests for both HTTP <code>GET</code> and <code>POST</code>
      * methods.
@@ -72,13 +74,16 @@ public class ManagerServlet extends HttpServlet {
             request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
             return;
         }       
-        String path = request.getServletPath(); //вернет запрос, который идет после названме контекста
         
-        if (!"manager".equals(user.getLogin())) {
+        boolean isRole = userRolesFacade.isRole("MANAGER", user); 
+        
+        if (!isRole) {
             request.setAttribute("info", "У вас нет прав для этого ресурса. Войдите в систему");
-            request.getRequestDispatcher("/WEB-INF/showLoginForm.jsp").forward(request, response);            
-            return;            
+            request.getRequestDispatcher("/showLoginForm").forward(request, response);            
+            return;         
         }
+
+        String path = request.getServletPath(); //вернет запрос, который идет после названме контекста       
         
         switch (path) {
             case "/addBook":
@@ -141,12 +146,7 @@ public class ManagerServlet extends HttpServlet {
                 request.setAttribute("bookId", book.getId());
                 request.getRequestDispatcher("/editBookForm").forward(request, response);         
                 break;                                   
-                             
-            case "/listReaders":
-                List<Reader> listReaders = readerFacade.findAll();
-                request.setAttribute("listReaders", listReaders);
-                request.getRequestDispatcher("/WEB-INF/listReaders.jsp").forward(request, response);
-                break;                       
+                                                   
         }
     }
 
