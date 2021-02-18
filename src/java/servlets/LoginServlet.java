@@ -119,7 +119,7 @@ public class LoginServlet extends HttpServlet {
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 break;
                 
-            case "logout":
+            case "/logout":
                 session = request.getSession(false);
                 if (session != null) {
                     session.invalidate();                 

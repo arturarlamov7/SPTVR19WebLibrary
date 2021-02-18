@@ -118,7 +118,7 @@ public class UserServlet extends HttpServlet {
                 history = historyFacade.find(Long.parseLong(historyId));
                 history.setReturnDate(new GregorianCalendar().getTime());
                 historyFacade.edit(history);
-                request.setAttribute("info","Добавлена возвращена");
+                request.setAttribute("info","Книга возвращена! ");
                 request.getRequestDispatcher("/index.jsp").forward(request, response);
                 
                 break;
